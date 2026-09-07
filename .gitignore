@@ -1,0 +1,19 @@
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Editores e IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker e Variáveis locais
+.env
+.env.local
+docker-compose.override.yml
+
+# Logs
+*.log

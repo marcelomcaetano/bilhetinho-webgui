@@ -1,0 +1,6 @@
+[submodule "bilhetinho-ui"]
+	path = bilhetinho-ui
+	url = https://github.com/marcelomcaetano/bilhetinho-ui.git
+[submodule "bilhetinho-api"]
+	path = bilhetinho-api
+	url = https://github.com/marcelomcaetano/bilhetinho-api.git
