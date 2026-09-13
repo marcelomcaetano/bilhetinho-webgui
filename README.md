@@ -90,7 +90,7 @@ A forma mais rápida, padronizada e moderna de subir todo o ecossistema integrad
    *(Ou adicione a flag `-d` para executar em segundo plano: `docker compose up --build -d`)*
 
 2. O Docker Compose irá:
-   * Subir o container `pg-bilhetinho` (PostgreSQL 16) com volume persistente e aguardar a checagem de integridade (*healthcheck*).
+   * Subir o container `bilhetinho-pg` (PostgreSQL 16) com volume persistente e aguardar a checagem de integridade (*healthcheck*).
    * Construir a imagem da `bilhetinho-api` com Maven e Java 21 e iniciá-la na porta `8080`. O Hibernate criará todas as tabelas automaticamente.
    * Construir a imagem da `bilhetinho-ui` com servidor Nginx Alpine e iniciá-la na porta `3000`.
 
@@ -124,7 +124,7 @@ Execute o comando abaixo no terminal:
 
 ```bash
 docker run -d \
-  --name pg-bilhetinho \
+  --name bilhetinho-pg \
   -e POSTGRES_DB=bilhetinho_db \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
@@ -134,7 +134,7 @@ docker run -d \
 
 #### Parâmetros Utilizados
 
-* `--name pg-bilhetinho`: Nome amigável atribuído ao container.
+* `--name bilhetinho-pg`: Nome amigável atribuído ao container.
 * `-e POSTGRES_DB=bilhetinho_db`: Cria automaticamente o banco de dados `bilhetinho_db` na inicialização.
 * `-e POSTGRES_USER=postgres`: Define o usuário padrão do banco.
 * `-e POSTGRES_PASSWORD=postgres`: Define a senha de acesso (compatível com as configurações padrão da API).
@@ -213,7 +213,7 @@ Com todos os serviços em execução, acesse os seguintes endereços no navegado
 | **Área do Músico** | [http://localhost:3000/musico.html](http://localhost:3000/musico.html) | Login por e-mail, cadastro de shows com busca por CEP e gestão inline da fila de pedidos (aceitar/rejeitar). |
 | **Área de Pedidos (Público / QR Code)** | [http://localhost:3000/bilhetinho.html](http://localhost:3000/bilhetinho.html) | Envio de pedidos de música com sugestões em tempo real via iTunes Search API. |
 | **Swagger UI (Documentação da API)** | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) | Documentação interativa de todos os endpoints REST. |
-| **Banco de Dados (PostgreSQL)** | `localhost:5432` | Banco `bilhetinho_db` gerenciado pelo container `pg-bilhetinho`. |
+| **Banco de Dados (PostgreSQL)** | `localhost:5432` | Banco `bilhetinho_db` gerenciado pelo container `bilhetinho-pg`. |
 
 ---
 
@@ -249,19 +249,19 @@ const BASE_URL = 'http://localhost:8080/api';
 * **Parar o Banco de Dados:**
 
   ```bash
-  docker stop pg-bilhetinho
+  docker stop bilhetinho-pg
   ```
 
 * **Iniciar o Banco de Dados Novamente:**
 
   ```bash
-  docker start pg-bilhetinho
+  docker start bilhetinho-pg
   ```
 
 * **Remover o Container do Banco de Dados:**
 
   ```bash
-  docker rm -f pg-bilhetinho
+  docker rm -f bilhetinho-pg
   ```
 
 * **Parar a API ou o Front-End:**  
