@@ -1,0 +1,83 @@
+# ==============================================================================
+# Docker Compose — Orquestrador do Ecossistema Bilhetinho (WEBGUI)
+# Pós-Graduação em Engenharia de Software — PUC-Rio
+#
+# Serviços:
+#   1. postgres: Banco de dados relacional PostgreSQL 16
+#   2. bilhetinho-api: Back-End RESTful em Java 21 + Spring Boot (Porta 8080)
+#   3. bilhetinho-ui: Front-End Web em Nginx Alpine (Porta 3000)
+# ==============================================================================
+services:
+
+  # ----------------------------------------------------------------------------
+  # 1. Banco de Dados PostgreSQL 16
+  # ----------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: pg-bilhetinho
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bilhetinho_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bilhetinho_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - bilhetinho-net
+
+  # ----------------------------------------------------------------------------
+  # 2. Back-End API (Spring Boot 4.1.1 / Java 21)
+  # ----------------------------------------------------------------------------
+  bilhetinho-api:
+    build:
+      context: ./bilhetinho-api
+      dockerfile: Dockerfile
+    container_name: bilhetinho-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: bilhetinho_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      SERVER_PORT: 8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bilhetinho-net
+
+  # ----------------------------------------------------------------------------
+  # 3. Front-End Web GUI (Nginx Alpine / HTML5 + Bootstrap 5 + ES6)
+  # ----------------------------------------------------------------------------
+  bilhetinho-ui:
+    build:
+      context: ./bilhetinho-ui
+      dockerfile: Dockerfile
+    container_name: bilhetinho-ui
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - bilhetinho-api
+    networks:
+      - bilhetinho-net
+
+volumes:
+  pgdata:
+    name: pgdata_bilhetinho
+
+networks:
+  bilhetinho-net:
+    name: bilhetinho-net
+    driver: bridge

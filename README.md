@@ -34,15 +34,26 @@ O repositório orquestrador conecta dois módulos independentes gerenciados como
 
 ## Pré-requisitos do Ambiente
 
-Para executar o ecossistema completo na sua máquina, certifique-se de possuir instalado:
+### 🚀 Para Execução via Docker (Recomendado para Avaliação)
 
-1. **[Git](https://git-scm.com/):** Para clonagem e inicialização dos submódulos.
-2. **[Docker](https://www.docker.com/) / [Docker Desktop](https://www.docker.com/products/docker-desktop/):** Para subir o banco de dados PostgreSQL de forma rápida e isolada.
-3. **[Java 21 JDK](https://adoptium.net/temurin/releases/?version=21):** Para compilar e executar o back-end Spring Boot.
-4. **[Node.js](https://nodejs.org/) (versão 18 ou superior):** Utilizado para servir os arquivos estáticos do front-end com servidor HTTP local (`npx serve`).
-5. **Conexão com a Internet:**
-   * No primeiro build da API: para download das dependências Maven.
-   * Em tempo de execução: para o consumo das APIs externas públicas (**ViaCEP** pelo back-end e **iTunes Search API** pelo front-end).
+Para clonar e executar toda a solução integrada, você precisa **apenas de**:
+
+1. **[Git](https://git-scm.com/):** Para clonagem do repositório com os submódulos (`--recurse-submodules`).
+2. **[Docker Desktop](https://www.docker.com/products/docker-desktop/):** Para subir todos os containers integrados (Banco, API e Interface) com um único comando (`docker compose up --build`).
+3. **Conexão com a Internet:** Para download das imagens/dependências no primeiro build e consumo em tempo real das APIs públicas (**ViaCEP** e **iTunes Search API**).
+
+> [!NOTE]
+> **Zero Instalação de Java ou Node.js:**  
+> O avaliador **não** precisa instalar Java, Maven ou Node.js na sua máquina! O ambiente de compilação da API (Java 21 + Maven) e o servidor web Nginx do front-end estão 100% encapsulados e isolados dentro dos containers Docker.
+
+---
+
+### 💻 Para Desenvolvimento Local sem Docker (Opcional)
+
+Apenas caso deseje compilar e depurar os serviços manualmente fora do Docker:
+
+* **[Java 21 JDK](https://adoptium.net/temurin/releases/?version=21):** Para compilar e rodar a API Spring Boot no terminal ou IDE.
+* **[Node.js](https://nodejs.org/):** Para servir os arquivos estáticos do front-end com servidor HTTP local (`npx serve`).
 
 ---
 
@@ -64,9 +75,36 @@ cd bilhetinho-webgui
 
 ---
 
-## Guia de Execução Passo a Passo
+## Guia de Execução
 
-Siga a ordem recomendada abaixo para inicializar os serviços do sistema:
+### Opção 1: Execução Completa em 1 Comando via Docker Compose (Recomendado para Avaliação)
+
+A forma mais rápida, padronizada e moderna de subir todo o ecossistema integrado (Banco de Dados PostgreSQL + API Spring Boot + Interface Web Nginx) é utilizando o **Docker Compose**.
+
+1. Na raiz do projeto `bilhetinho-webgui`, execute:
+
+   ```bash
+   docker compose up --build
+   ```
+
+   *(Ou adicione a flag `-d` para executar em segundo plano: `docker compose up --build -d`)*
+
+2. O Docker Compose irá:
+   * Subir o container `pg-bilhetinho` (PostgreSQL 16) com volume persistente e aguardar a checagem de integridade (*healthcheck*).
+   * Construir a imagem da `bilhetinho-api` com Maven e Java 21 e iniciá-la na porta `8080`. O Hibernate criará todas as tabelas automaticamente.
+   * Construir a imagem da `bilhetinho-ui` com servidor Nginx Alpine e iniciá-la na porta `3000`.
+
+3. Para encerrar todos os containers e redes:
+
+   ```bash
+   docker compose down
+   ```
+
+---
+
+### Opção 2: Execução Manual para Desenvolvimento Local (Passo a Passo)
+
+Caso deseje executar os serviços de forma individual durante o desenvolvimento diário, siga a ordem abaixo:
 
 ```mermaid
 graph TD
